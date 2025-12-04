@@ -159,3 +159,63 @@ export async function getRecentActivity(params = {}) {
   }
   return data.data;
 }
+
+// ============================================
+// Admin API Functions
+// ============================================
+
+/**
+ * Get admin nonce for wallet signature
+ */
+export async function getAdminNonce(address) {
+  const response = await fetch(`${API_BASE_URL}/admin/nonce?address=${address}`);
+  
+  const data = await response.json();
+  if (!data.success) {
+    throw new Error(data.error || 'Failed to get nonce');
+  }
+  return data;
+}
+
+/**
+ * Verify admin wallet signature
+ */
+export async function verifyAdminSignature(address, signature) {
+  const response = await fetch(`${API_BASE_URL}/admin/verify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ address, signature })
+  });
+  
+  const data = await response.json();
+  if (!data.success) {
+    throw new Error(data.error || 'Verification failed');
+  }
+  return data;
+}
+
+/**
+ * Check if address is an admin
+ */
+export async function checkAdminStatus(address) {
+  const response = await fetch(`${API_BASE_URL}/admin/check?address=${address}`);
+  
+  const data = await response.json();
+  if (!data.success) {
+    throw new Error(data.error || 'Failed to check admin status');
+  }
+  return data;
+}
+
+/**
+ * Admin logout
+ */
+export async function adminLogout() {
+  const response = await fetch(`${API_BASE_URL}/admin/logout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  
+  const data = await response.json();
+  return data;
+}

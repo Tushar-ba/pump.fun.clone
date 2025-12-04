@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ethers } from 'ethers';
 import toast from 'react-hot-toast';
 import { useWallet } from '../contexts/WalletContext';
 import { generateContract, trackDeployment } from '../services/api';
+import CodeEditor from './CodeEditor';
+import { generateContractCode, AVAILABLE_FEATURES, ACCESS_CONTROL_OPTIONS } from '../utils/contractGenerator';
 import './TokenCreator.css';
 
 const initialFormData = {
@@ -11,9 +13,12 @@ const initialFormData = {
   initialSupply: '',
   maxSupply: '',
   mintable: false,
+  burnable: true,
+  pausable: false,
   buyTax: 0,
   sellTax: 0,
-  taxReceiver: ''
+  taxReceiver: '',
+  accessControl: 'ownable'
 };
 
 function TokenCreator() {
@@ -23,6 +28,24 @@ function TokenCreator() {
   const [isLoading, setIsLoading] = useState(false);
   const [deployedToken, setDeployedToken] = useState(null);
   const [contractData, setContractData] = useState(null);
+  const [showCodePanel, setShowCodePanel] = useState(true);
+
+  // Generate live preview code
+  const previewCode = useMemo(() => {
+    return generateContractCode({
+      name: formData.name || 'MyToken',
+      symbol: formData.symbol || 'MTK',
+      initialSupply: formData.initialSupply || '1000000',
+      decimals: 18,
+      maxSupply: formData.maxSupply || '0',
+      mintable: formData.mintable,
+      burnable: formData.burnable,
+      pausable: formData.pausable,
+      buyTax: formData.buyTax,
+      sellTax: formData.sellTax,
+      accessControl: formData.accessControl
+    });
+  }, [formData]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -177,136 +200,183 @@ function TokenCreator() {
   };
 
   const renderStep1 = () => (
-    <div className="form-step">
-      <h2>Token Details</h2>
-      <p className="step-description">Enter the basic information for your token</p>
-      
-      <div className="form-grid">
-        <div className="form-group">
-          <label htmlFor="name">Token Name *</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="e.g., My Awesome Token"
-            maxLength={50}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="symbol">Symbol *</label>
-          <input
-            type="text"
-            id="symbol"
-            name="symbol"
-            value={formData.symbol}
-            onChange={handleChange}
-            placeholder="e.g., MAT"
-            maxLength={11}
-            style={{ textTransform: 'uppercase' }}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="initialSupply">Initial Supply *</label>
-          <input
-            type="number"
-            id="initialSupply"
-            name="initialSupply"
-            value={formData.initialSupply}
-            onChange={handleChange}
-            placeholder="e.g., 1000000"
-            min="1"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="maxSupply">Max Supply (0 = unlimited)</label>
-          <input
-            type="number"
-            id="maxSupply"
-            name="maxSupply"
-            value={formData.maxSupply}
-            onChange={handleChange}
-            placeholder="e.g., 10000000"
-            min="0"
-          />
-        </div>
-      </div>
-
-      <div className="form-section">
-        <h3>Token Features</h3>
-        
-        <div className="checkbox-group">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              name="mintable"
-              checked={formData.mintable}
-              onChange={handleChange}
-            />
-            <span className="checkmark"></span>
-            <span>Mintable (Owner can mint new tokens)</span>
-          </label>
-        </div>
-      </div>
-
-      <div className="form-section">
-        <h3>Tax Settings (Optional)</h3>
+    <div className="form-step wizard-layout">
+      <div className="wizard-config">
+        <h2>Token Configuration</h2>
+        <p className="step-description">Configure your ERC-20 token with OpenZeppelin standards</p>
         
         <div className="form-grid">
           <div className="form-group">
-            <label htmlFor="buyTax">Buy Tax (%)</label>
+            <label htmlFor="name">Token Name *</label>
             <input
-              type="number"
-              id="buyTax"
-              name="buyTax"
-              value={formData.buyTax}
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              min="0"
-              max="25"
+              placeholder="e.g., My Awesome Token"
+              maxLength={50}
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="sellTax">Sell Tax (%)</label>
+            <label htmlFor="symbol">Symbol *</label>
             <input
-              type="number"
-              id="sellTax"
-              name="sellTax"
-              value={formData.sellTax}
+              type="text"
+              id="symbol"
+              name="symbol"
+              value={formData.symbol}
               onChange={handleChange}
-              min="0"
-              max="25"
+              placeholder="e.g., MAT"
+              maxLength={11}
+              style={{ textTransform: 'uppercase' }}
             />
           </div>
 
-          <div className="form-group full-width">
-            <label htmlFor="taxReceiver">Tax Receiver Address</label>
+          <div className="form-group">
+            <label htmlFor="initialSupply">Initial Supply *</label>
             <input
-              type="text"
-              id="taxReceiver"
-              name="taxReceiver"
-              value={formData.taxReceiver}
+              type="number"
+              id="initialSupply"
+              name="initialSupply"
+              value={formData.initialSupply}
               onChange={handleChange}
-              placeholder="0x... (leave empty to use your wallet)"
+              placeholder="e.g., 1000000"
+              min="1"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="maxSupply">Max Supply (0 = unlimited)</label>
+            <input
+              type="number"
+              id="maxSupply"
+              name="maxSupply"
+              value={formData.maxSupply}
+              onChange={handleChange}
+              placeholder="e.g., 10000000"
+              min="0"
             />
           </div>
         </div>
+
+        <div className="form-section">
+          <h3>🔧 Features</h3>
+          <div className="features-grid">
+            {AVAILABLE_FEATURES.map(feature => (
+              <label key={feature.id} className="feature-card">
+                <input
+                  type="checkbox"
+                  name={feature.id}
+                  checked={formData[feature.id]}
+                  onChange={handleChange}
+                  disabled={feature.id === 'burnable'}
+                />
+                <div className="feature-content">
+                  <span className="feature-icon">{feature.icon}</span>
+                  <span className="feature-name">{feature.name}</span>
+                  <span className="feature-desc">{feature.description}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h3>🔐 Access Control</h3>
+          <div className="access-control-options">
+            {ACCESS_CONTROL_OPTIONS.map(option => (
+              <label key={option.id} className="access-option">
+                <input
+                  type="radio"
+                  name="accessControl"
+                  value={option.id}
+                  checked={formData.accessControl === option.id}
+                  onChange={handleChange}
+                />
+                <div className="option-content">
+                  <span className="option-name">{option.name}</span>
+                  <span className="option-desc">{option.description}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h3>💰 Tax Settings (Optional)</h3>
+          
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="buyTax">Buy Tax (%)</label>
+              <input
+                type="number"
+                id="buyTax"
+                name="buyTax"
+                value={formData.buyTax}
+                onChange={handleChange}
+                min="0"
+                max="25"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="sellTax">Sell Tax (%)</label>
+              <input
+                type="number"
+                id="sellTax"
+                name="sellTax"
+                value={formData.sellTax}
+                onChange={handleChange}
+                min="0"
+                max="25"
+              />
+            </div>
+
+            <div className="form-group full-width">
+              <label htmlFor="taxReceiver">Tax Receiver Address</label>
+              <input
+                type="text"
+                id="taxReceiver"
+                name="taxReceiver"
+                value={formData.taxReceiver}
+                onChange={handleChange}
+                placeholder="0x... (leave empty to use your wallet)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="form-actions">
+          <button 
+            className="btn btn-primary btn-large"
+            onClick={handleGenerateContract}
+            disabled={isLoading || !isConnected}
+          >
+            {isLoading ? 'Generating...' : 'Generate & Continue'}
+          </button>
+          {!isConnected && (
+            <p className="warning-text">Please connect your wallet first</p>
+          )}
+        </div>
       </div>
 
-      <div className="form-actions">
-        <button 
-          className="btn btn-primary btn-large"
-          onClick={handleGenerateContract}
-          disabled={isLoading || !isConnected}
-        >
-          {isLoading ? 'Generating...' : 'Generate Contract'}
-        </button>
-        {!isConnected && (
-          <p className="warning-text">Please connect your wallet first</p>
+      <div className="wizard-preview">
+        <div className="preview-header">
+          <h3>📄 Contract Preview</h3>
+          <button 
+            className="toggle-preview"
+            onClick={() => setShowCodePanel(!showCodePanel)}
+          >
+            {showCodePanel ? 'Hide' : 'Show'} Code
+          </button>
+        </div>
+        {showCodePanel && (
+          <CodeEditor 
+            code={previewCode}
+            readOnly={true}
+            filename={`${formData.symbol || 'Token'}.sol`}
+          />
         )}
       </div>
     </div>

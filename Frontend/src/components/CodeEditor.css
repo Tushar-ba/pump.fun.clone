@@ -1,0 +1,189 @@
+.code-editor-container {
+  background: #1e1e2e;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #181825;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.code-editor-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.file-icon {
+  font-size: 16px;
+}
+
+.code-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.code-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.code-btn:hover {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--primary-color);
+}
+
+.code-editor-wrapper {
+  flex: 1;
+  overflow: auto;
+  max-height: 500px;
+}
+
+.code-editor {
+  background: #1e1e2e !important;
+  caret-color: #fff;
+}
+
+.code-editor textarea {
+  outline: none !important;
+}
+
+.code-editor pre {
+  margin: 0 !important;
+}
+
+/* Prism theme overrides for dark mode */
+.code-editor .token.comment,
+.code-editor .token.prolog,
+.code-editor .token.doctype,
+.code-editor .token.cdata {
+  color: #6272a4;
+}
+
+.code-editor .token.punctuation {
+  color: #f8f8f2;
+}
+
+.code-editor .token.property,
+.code-editor .token.tag,
+.code-editor .token.constant,
+.code-editor .token.symbol,
+.code-editor .token.deleted {
+  color: #ff79c6;
+}
+
+.code-editor .token.boolean,
+.code-editor .token.number {
+  color: #bd93f9;
+}
+
+.code-editor .token.selector,
+.code-editor .token.attr-name,
+.code-editor .token.string,
+.code-editor .token.char,
+.code-editor .token.builtin,
+.code-editor .token.inserted {
+  color: #50fa7b;
+}
+
+.code-editor .token.operator,
+.code-editor .token.entity,
+.code-editor .token.url,
+.code-editor .language-css .token.string,
+.code-editor .style .token.string,
+.code-editor .token.variable {
+  color: #f8f8f2;
+}
+
+.code-editor .token.atrule,
+.code-editor .token.attr-value,
+.code-editor .token.function,
+.code-editor .token.class-name {
+  color: #f1fa8c;
+}
+
+.code-editor .token.keyword {
+  color: #ff79c6;
+}
+
+.code-editor .token.regex,
+.code-editor .token.important {
+  color: #ffb86c;
+}
+
+.code-editor-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: #181825;
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+}
+
+.line-count {
+  color: var(--text-muted);
+}
+
+.language-badge {
+  background: var(--primary-color);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Scrollbar styling */
+.code-editor-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.code-editor-wrapper::-webkit-scrollbar-track {
+  background: #1e1e2e;
+}
+
+.code-editor-wrapper::-webkit-scrollbar-thumb {
+  background: #45475a;
+  border-radius: 4px;
+}
+
+.code-editor-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #585b70;
+}
+
+/* Line numbers */
+.code-editor-with-lines {
+  counter-reset: line;
+}
+
+.code-editor-with-lines .token-line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2em;
+  margin-right: 1em;
+  text-align: right;
+  color: #6272a4;
+  user-select: none;
+}

@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./config/database');
 const { contractRoutes, liquidityRoutes, statsRoutes } = require('./routes');
 const configRoutes = require('./routes/config');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,6 +35,7 @@ app.use('/api/contracts', contractRoutes);
 app.use('/api/liquidity', liquidityRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 404 handler
 app.use((req, res) => {
