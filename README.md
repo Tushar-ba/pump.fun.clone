@@ -73,7 +73,7 @@ npm run dev
 |----------|-------------|---------|
 | `PORT` | Server port | 3001 |
 | `MONGODB_URI` | MongoDB connection string | mongodb://localhost:27017/token-creator |
-| `FRONTEND_URL` | Frontend URL for CORS | http://localhost:5173 |
+| `FRONTEND_URL` | Frontend URL for CORS | https://pump-fun-clone-gamma.vercel.app/ |
 
 ### Supported Networks
 
