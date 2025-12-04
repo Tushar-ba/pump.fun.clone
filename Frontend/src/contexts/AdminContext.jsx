@@ -3,7 +3,7 @@ import { useWallet } from './WalletContext';
 
 const AdminContext = createContext(null);
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || ' https://pump-fun-clone.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export function AdminProvider({ children }) {
   const { account, signer, isConnected } = useWallet();
